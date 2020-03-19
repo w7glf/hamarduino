@@ -19,7 +19,12 @@ char BeaconID_MorseCode[] = "W7GLF/B";
 #define id_audio_output_pin 10      // output audio on pin 10
 #define ptt_output_pin 5            // PTT
 
-// Send Dashes rather than solid carrier between IDs
+// If both SEND_CARRIER and SEND_DASHES are set to TRUE then only SEND_DASHES will be done
+
+// Send solid carrier between IDs
+#define SEND_CARRIER false
+
+// Send Dashes between IDs
 #define SEND_DASHES true
 
 // Define PTT is active when HIGH or active when LOW
@@ -35,17 +40,18 @@ int note = 1200;      // music note/pitch
 // ID_TIMER - how long to send carrier between IDs
 const unsigned long ID_TIMER = (unsigned long)  30 * 1000;            // 30 seconds
 
+
+//  Define the speed of the morse code
 //  Adjust the 'dotlen' length to speed up or slow down the morse code
 int dotLen = 100;            // length of the morse code 'dot'
 
-// Timers for ID and HEARTBEAT
+// Timer for ID
 unsigned long id_timer;
 
 // Define state variables
 boolean keydown = false;
 
 /*
-  Define the speed of the morse code
   Adjust the 'dotlen' length to speed up or slow down your morse code
     (all of the other lengths are based on the dotlen)
 
@@ -265,6 +271,7 @@ void setup() {
   digitalWrite(ptt_output_pin, PTT_ACTIVE);
   // Give time for TX to come up
   delay(500);
+  id_timer = 0;
   KeyDown();
 }
 
@@ -289,7 +296,7 @@ void loop()
     MorseDash();
     delay (wordSpace);
   } 
-  else if (!keydown)
+  else if (SEND_CARRIER && !keydown)
   {  // Send long carrier - only call KeyDown if it is not down already
     keydown = true;
     KeyDown ();
